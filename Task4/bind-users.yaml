@@ -1,0 +1,93 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-admin-prod-binding
+subjects:
+- kind: Group
+  name: platform:devops
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-viewer-binding
+subjects:
+- kind: Group
+  name: platform:security-audit
+  apiGroup: rbac.authorization.k8s.io
+- kind: Group
+  name: platform:managers
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: cluster-viewer
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: secret-reader-binding
+subjects:
+- kind: Group
+  name: platform:devops
+  apiGroup: rbac.authorization.k8s.io
+- kind: Group
+  name: platform:security-audit
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: secret-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: integration-external-binding
+subjects:
+- kind: Group
+  name: platform:integration-engineering
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: integration-external
+  apiGroup: rbac.authorization.k8s.io
+---
+# RoleBinding для namespace-специфичных ролей (пример для namespace "propdev-production")
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: namespace-developer-binding
+  namespace: propdev-production
+subjects:
+- kind: Group
+  name: product:functional-team
+  apiGroup: rbac.authorization.k8s.io
+- kind: Group
+  name: product:backend-devs
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: namespace-developer
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: namespace-viewer-binding
+  namespace: propdev-production
+subjects:
+- kind: Group
+  name: product:business-analysts
+  apiGroup: rbac.authorization.k8s.io
+- kind: Group
+  name: product:managers
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: namespace-viewer
+  apiGroup: rbac.authorization.k8s.io
