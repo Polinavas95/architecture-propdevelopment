@@ -1,0 +1,29 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Диаграмма контекста — Умный дом (PropDevelopment)
+
+Person(owner, "Собственник", "Пользователь мобильного приложения, жилец ЖК")
+
+System_Boundary(propdev, "PropDevelopment") {
+    System(mobile_app, "Мобильное приложение", "Доступ к услугам ЖКУ, управление умным домом")
+    System(tenant_core, "Tenant Core App", "Сервис предоставления услуг ЖКУ")
+    System(smart_gateway, "API Gateway (Умный дом)", "Аутентификация, авторизация, логирование, прокси к партнёру")
+    System(smart_service, "Smart Home Integration Service", "Синхронизация прав доступа, кэш разрешений")
+}
+
+System_Ext(partner_platform, "Партнёрская платформа «Умный дом»", "Управляет домофонами и шлагбаумами")
+System_Ext(door_device, "Устройства «Домофон»", "Биометрия (лицо), открытие по звонку")
+System_Ext(barrier_device, "Устройства «Шлагбаум»", "Распознавание номеров автомобилей")
+
+Rel(owner, mobile_app, "Использует", "HTTPS / JWT")
+Rel(mobile_app, smart_gateway, "Вызывает API", "HTTPS / OAuth2")
+Rel(smart_gateway, smart_service, "Проверяет права", "mTLS")
+Rel(smart_gateway, partner_platform, "Проксирует запросы", "API Key")
+Rel(smart_service, tenant_core, "Получает данные о правах", "REST")
+Rel(partner_platform, door_device, "Управляет", "MQTT+TLS")
+Rel(partner_platform, barrier_device, "Управляет", "MQTT+TLS")
+
+Rel_Back(partner_platform, smart_gateway, "Запрашивает проверку доступа", "API Key")
+
+@enduml

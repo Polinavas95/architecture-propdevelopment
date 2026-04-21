@@ -1,0 +1,50 @@
+@startuml
+title Диаграмма контейнеров — Группа сервисов ЖКУ с «Умным домом» (совместимая версия)
+
+skinparam component {
+  BackgroundColor LightBlue
+  BorderColor Black
+  FontSize 12
+}
+
+skinparam database {
+  BackgroundColor LightYellow
+  BorderColor Black
+}
+
+skinparam actor {
+  BackgroundColor LightGray
+  BorderColor Black
+}
+
+actor "Собственник" as Owner
+
+rectangle "Партнёрская платформа\n«Умный дом»" as Partner
+rectangle "API Управляющих компаний" as UK_API
+
+rectangle "Группа сервисов ЖКУ (расширенная)" {
+
+  component "Витрина ЖКУ" as Showcase
+  component "Tenant Core App" as TenantCore
+  database "CRM собственников" as CRM_DB
+  component "Smart Home Integration Service" as SmartService
+  component "API Gateway (Умный дом)" as SmartGateway
+  database "Smart Home Cache (Redis)" as SmartCache
+}
+
+component "Мобильное приложение" as MobileApp
+
+' Взаимодействия
+Owner --> MobileApp : использует
+MobileApp --> Showcase : просматривает
+Showcase --> TenantCore : вызывает
+TenantCore --> CRM_DB : читает/пишет
+TenantCore --> UK_API : интегрируется (REST)
+MobileApp --> SmartGateway : вызывает API умного дома\n(OAuth2 JWT)
+SmartGateway --> SmartService : проверяет права\n(mTLS)
+SmartService --> TenantCore : запрашивает данные о правах\n(REST)
+SmartService --> SmartCache : читает/пишет кэш\n(Redis Protocol)
+SmartGateway --> Partner : проксирует команды\n(HTTPS / API Key))
+Partner --> SmartGateway : запрашивает проверку доступа\n(API Key)
+
+@enduml
